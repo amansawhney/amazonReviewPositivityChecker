@@ -16,6 +16,7 @@ def scrapeYelp(url, queryString)
   "From" => "foo@bar.invalid",
   "Referer" => "http://www.ruby-lang.org/"))
   results = doc.css("#super-container > div > div > div.column.column-alpha.main-section > div > div.feed > div.review-list > ul > li > div > div.review-wrapper > div.review-content > p")
+  reviews.push(["Rating", "Review Text"])
   results.each do |r|
     if(r.text.downcase.include?(queryString.downcase))
       ps = PragmaticSegmenter::Segmenter.new(text: r.text)

@@ -2,6 +2,8 @@ require 'open-uri'
 require 'nokogiri'
 require 'sentimental'
 require 'pragmatic_segmenter'
+require 'csv'
+
 
 def scrapeYelp(url, queryString)
 
@@ -22,12 +24,18 @@ def scrapeYelp(url, queryString)
       sentences.each do |s|
         scores.push(analyzer.score s)
       end
-      reviews.push(scores.inject{ |sum, el| sum + el }.to_f)
-      reviews.push(r.text)
+      reviewPair = []
+      reviewPair.push(scores.inject{ |sum, el| sum + el }.to_f)
+      reviewPair.push(r.text)
+      reviews.push(reviewPair)
     end
   end
   return reviews
 end
+
+# #to_csv automatically appends '\n', so we don't need it in #join
+File.open("./yelp.csv",'w'){ |f| f << scrapeYelp("https://www.yelp.com/biz/peaches-hothouse-brooklyn", "Fried Chicken").map(&:to_csv).join }
+
 
 File.write('./reviewData.txt', scrapeYelp("https://www.yelp.com/biz/peaches-hothouse-brooklyn", "Fried Chicken").to_s)
 #   File.open(f, 'w') { |file| file.write(scrapeAmazon("https://www.amazon.com/Neutrogena-Therapeutic-Original-Dandruff-Treatment/dp/B0009KN8UA/ref=sr_1_1?ie=UTF8&qid=1501120105&sr=8-1-spons&keywords=t%2Bgel%2Bshampoo&th=1")
